@@ -5,7 +5,7 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-  workflow_dispatch: # Allows manual trigger button in GitHub Actions tab
+  workflow_dispatch:
 
 jobs:
   build:
@@ -29,10 +29,30 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Install Dependencies
+      - name: Generate Native Android Scaffolding & Install Dependencies
         run: |
           cd fintrack/frontend
+          # Generate official Flutter android scaffolding (gradlew, wrapper, configs)
+          flutter create . --platforms=android --org com.fintrack
           flutter pub get
+
+      - name: Add Internet Permission & Cleartext Traffic to AndroidManifest
+        run: |
+          cd fintrack/frontend
+          python3 -c "
+          import os, re
+          manifest_path = 'android/app/src/main/AndroidManifest.xml'
+          if os.path.exists(manifest_path):
+              with open(manifest_path, 'r', encoding='utf-8') as f:
+                  content = f.read()
+              if 'android.permission.INTERNET' not in content:
+                  content = content.replace('<application', '    <uses-permission android:name=\"android.permission.INTERNET\" />\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\n    <application')
+              if 'usesCleartextTraffic' not in content:
+                  content = content.replace('<application', '<application\n        android:usesCleartextTraffic=\"true\"')
+              with open(manifest_path, 'w', encoding='utf-8') as f:
+                  f.write(content)
+              print('AndroidManifest updated successfully!')
+          "
 
       - name: Build Android Release APK
         run: |
