@@ -32,7 +32,8 @@ jobs:
       - name: Generate Native Android Scaffolding & Install Dependencies
         run: |
           cd fintrack/frontend
-          # Generate official Flutter android scaffolding (gradlew, wrapper, configs)
+          # Remove manually created android folder to ensure clean, official Flutter scaffolding
+          rm -rf android
           flutter create . --platforms=android --org com.fintrack
           flutter pub get
 
@@ -40,7 +41,7 @@ jobs:
         run: |
           cd fintrack/frontend
           python3 -c "
-          import os, re
+          import os
           manifest_path = 'android/app/src/main/AndroidManifest.xml'
           if os.path.exists(manifest_path):
               with open(manifest_path, 'r', encoding='utf-8') as f:

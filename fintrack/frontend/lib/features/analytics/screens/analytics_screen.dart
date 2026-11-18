@@ -157,6 +157,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                                 maxY: _calculateMaxY(monthlyList),
                                 barTouchData: BarTouchData(
                                   touchTooltipData: BarTouchTooltipData(
+                                    getTooltipColor: (group) => const Color(0xFF1E293B),
                                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                                       final isIncomeRod = rodIndex == 0;
                                       final type = isIncomeRod ? 'Income' : 'Expense';
